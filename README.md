@@ -1,1 +1,1 @@
-# test-project
+After cloning this repository you will observe two folders. Inside each folder you should install npm packages with "npm install"
