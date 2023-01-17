@@ -8,6 +8,7 @@
                 <td @click="doSort('description')">Description</td>
                 <td @click="doSort('startDate')">Start date</td>
                 <td @click="doSort('endDate')">End date</td>
+                <td>Remove</td>
             </tr>
         </thead>
         <tbody>
@@ -16,6 +17,7 @@
                 <td>{{ event.description }}</td>
                 <td>{{ formatDate(event.startDate) }}</td>
                 <td>{{ formatDate(event.endDate) }}</td>
+                <td><div class="remove" @click="removeEvent(event._id)">remove</div></td>
             </tr>
         </tbody>
     </table>
@@ -54,7 +56,7 @@ export default {
             try {
                 const id = this.userId;
                 const res = await axios(`http://127.0.0.1:8000/api/events/${id}?page=${this.pagination.page}&limit=${this.pagination.limit}`);
-                this.events = res.data.data.events;
+                this.events = res.data.data.events || [];
                 this.pagination.lastPageNumber = Math.ceil(res.data.numEvents / this.pagination.limit);
             } catch (err) {
                 console.log('can not get all events', err);
@@ -85,6 +87,18 @@ export default {
             if (this.pagination.page > 1) {
                 this.pagination.page--;
                 await this.getEventsByUserId(this.userId);
+            }
+        },
+        async removeEvent(id) {
+            try {
+                if (!id) {
+                    return;
+                }
+
+                const res = await axios.delete(`http://127.0.0.1:8000/api/events/${id}`);
+                await this.getEventsByUserId(this.userId);
+            } catch (err) {
+                
             }
         }
     },
@@ -144,5 +158,11 @@ table tbody tr:last-of-type {
 table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
+}
+
+.remove {
+    text-transform: uppercase;
+    cursor: pointer;
+    color: red;
 }
 </style>
