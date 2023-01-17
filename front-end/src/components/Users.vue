@@ -9,6 +9,7 @@
                 <td @click="doSort('phoneNumber')">Phone number</td>
                 <td @click="doSort('eventsCount')">Events Count</td>
                 <td @click="doSort('nextEventDate')">Next Event Date</td>
+                <td>Remove</td>
             </tr>
         </thead>
         <tbody>
@@ -16,8 +17,9 @@
                 <td><a :href="getUserLink(user._id)">{{ user.userName }}</a></td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.phoneNumber }}</td>
-                <td>{{ user.eventsCount || '0' }}</td>
-                <td>{{ user.nextEventDate || 'no events' }}</td>
+                <td>{{ formatDate(user.eventsCount) || '0' }}</td>
+                <td>{{ formatDate(user.nextEventDate) || 'no events' }}</td>
+                <td><div class="remove" @click="removeUser(user._id)">remove</div></td>
             </tr>
         </tbody>
     </table>
@@ -65,7 +67,6 @@ export default {
             return '/user/' + id;
         },
         doSort(field) {
-            console.log(this.sort);
             if (field == this.sort.field) {
                 this.sort.desc = !this.sort.desc
             } else {
@@ -77,16 +78,32 @@ export default {
             if (this.pagination.page < this.pagination.lastPageNumber) {
                 this.pagination.page++;
                 await this.getAllUsers();
-                console.log('inc');
             }
         },
         async decPage() {
             if (this.pagination.page > 1) {
                 this.pagination.page--;
                 await this.getAllUsers();
-                console.log('dec');
             }
-        }
+        },
+        async removeUser(id) {
+            try {
+                if (!id) {
+                    return;
+                }
+                
+                const res = await axios.delete(`http://127.0.0.1:8000/api/users/${id}`);
+                await this.getAllUsers();
+            } catch (err) {
+                
+            }
+        },
+        formatDate(date) {
+            if (!date) {
+                return;
+            }
+            return (new Date(date)).toString().split('GMT')[0];
+        },
     },
     computed: {
         sortedArray() {
@@ -147,5 +164,11 @@ table tbody tr:last-of-type {
 table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
+}
+
+.remove {
+    text-transform: uppercase;
+    cursor: pointer;
+    color: red;
 }
 </style>

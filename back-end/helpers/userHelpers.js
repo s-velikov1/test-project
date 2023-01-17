@@ -12,7 +12,6 @@ const updateEventsCount = async (userId) => {
 
 const updateNextEventDate = async (userId) => {
     try {
-        console.log('update entry');
         const Event = require('./../models/eventModel');
         const eventsCount = await Event.countDocuments({ userId: userId });
         if (eventsCount > 0) {

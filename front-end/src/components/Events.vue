@@ -80,7 +80,6 @@ export default {
             if (this.pagination.page < this.pagination.lastPageNumber) {
                 this.pagination.page++;
                 await this.getEventsByUserId(this.userId);
-                console.log(this.events);
             }
         },
         async decPage() {

@@ -62,6 +62,28 @@ const getUser = async (req, res) => {
         });
     }
 }
+
+const deleteUser = async (req, res) => {
+    try {
+        const { removeAllEventsByUserId } = require('./../helpers/eventHelpers');
+        const userId = req.params.id;
+
+        await User.findByIdAndDelete(userId);
+
+        await removeAllEventsByUserId(userId);
+
+        res.status(200).json({
+            status: 'success',
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(404).json({
+            status: 'fail'
+        });
+    }
+}
+
 module.exports.getAllUsers = getAllUsers;
 module.exports.createUser = createUser;
 module.exports.getUser = getUser;
+module.exports.deleteUser = deleteUser;
